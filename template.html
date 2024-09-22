@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascii Art Web</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+</head>
+<body>
+    {{if .AsciiArt}}
+    <div style="border: 2px solid black; width: 140px; padding: 5px; text-align: center; background-color: black; border-radius: 10px; float: right">
+        <form action="/download" method="post">
+            <select name="fileType">
+                <option value="txt" selected>.txt</option>
+                <option value="doc">.doc</option>
+                <option value="html">.html</option>
+            </select>
+            <button type="submit">Download</button>
+        </form>
+    </div>
+    <br/>
+    {{end}}
+    <center>
+        <h1>Ascii Art</h1>
+        <form action="/ascii-art" method="post">
+            <textarea name="text" placeholder="Enter text" required>{{.Text}}</textarea>
+            <br/>
+            <select name="banner">
+                <option value="all" {{if eq .Banner "all"}}selected{{end}}>All</option>
+                <option value="standard" {{if eq .Banner "standard"}}selected{{end}}>Standard</option>
+                <option value="shadow" {{if eq .Banner "shadow"}}selected{{end}}>Shadow</option>
+                <option value="thinkertoy" {{if eq .Banner "thinkertoy"}}selected{{end}}>Thinkertoy</option>
+            </select>
+            <button type="submit">Generate</button>
+        </form>
+    </center>
+    <div style="margin-left: 20px;">
+        {{if .AsciiArt}}<pre>{{.AsciiArt}}</pre>{{else}} Result will be displayed here... {{end}}
+    </div>
+</body>
+</html>
