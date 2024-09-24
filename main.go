@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func main() {
 	log.Println("Starting server on http://localhost:3000/")
 	err := http.ListenAndServe(":3000", nil)
 	if err != nil {
-		log.Fatal("Error starting the server:", err)
+		log.Fatalln("Error starting the server:", err)
 	}
 }
 
@@ -65,22 +66,24 @@ func AppHandler(w http.ResponseWriter, r *http.Request) {
 
 func Export(w http.ResponseWriter, r *http.Request) {
 	fileType := r.FormValue("fileType")
-	fmt.Println(fileType)
 	switch fileType {
 	case "txt":
+		result := strings.ReplaceAll(data.AsciiArtTxt, "<br>", "\n")
 		w.Header().Set("Content-Disposition", "attachment; filename=asciiArt.txt")
     	w.Header().Set("Content-Type", "text/plain")
-		result := strings.ReplaceAll(data.AsciiArtTxt, "<br>", "\n")
+    	w.Header().Set("Content-Lenght", strconv.Itoa(len(result)))
 		w.Write([]byte(result))
 	case "doc":
+		result := strings.ReplaceAll(data.AsciiArtTxt, "<br>", "\n")
 		w.Header().Set("Content-Disposition", "attachment; filename=asciiArt.docx")
     	w.Header().Set("Content-Type", "application/octet-stream")
-		result := strings.ReplaceAll(data.AsciiArtTxt, "<br>", "\n")
+    	w.Header().Set("Content-Lenght", strconv.Itoa(len(result)))
 		w.Write([]byte(result))
 	case "html":
+		result := "<pre>" + data.AsciiArt + "</pre>"
 		w.Header().Set("Content-Disposition", "attachment; filename=asciiArt.html")
     	w.Header().Set("Content-Type", "text/html")
-		result := "<pre>" + data.AsciiArt + "</pre>"
+    	w.Header().Set("Content-Lenght", strconv.Itoa(len(result)))
 		w.Write([]byte(result))
 	default :
 		http.Error(w, "404- Not Found", 404)
@@ -110,9 +113,8 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
-		//need to add internal server error here
-		log.Fatal(err)
-		return
+		http.Error(w, "500 - Internal Server Error", 500)
+		log.Fatalln(err)
 	}
 
 	text := r.Form.Get("text")
